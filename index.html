@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="sl">
+
+<head>
+	<meta charset="utf-8">
+	<title>Rezervacija hotelske sobe</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.6.2/dist/sweetalert2.all.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+
+</head>
+
+<body>
+	<div class="wrapper">
+		<div class="inner">
+			<form action=# method="POST">
+				<h3>Rezervirajte sobo</h3>
+				<div class="form-row">
+					<div class="form-wrapper">
+						<label for="ime">Ime *</label>
+						<input type="text" name="ime" id="ime" class="form-control" required>
+					</div>
+					<div class="form-wrapper">
+						<label for="priimek">Priimek *</label>
+						<input type="text" name="priimek" id="priimek" class="form-control" required>
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-wrapper">
+						<label for="telst">Telefonska številka *</label>
+						<input type="tel" name="telst" id="telst" class="form-control" pattern="[\d]{3} [\d]{3} [\d]{3}"
+							onkeypress="return onlyNumberKey(event)" required>
+					</div>
+					<script>
+						document.getElementById("telst").addEventListener("keydown", function (e) {
+							const txt = this.value;
+							// prevent more than 11 characters, ignore the spacebar, allow the backspace
+							if ((txt.length == 11 || e.which == 32) & e.which !== 8) e.preventDefault();
+							// add spaces after 3 & 7 characters, allow the backspace
+							if ((txt.length == 3 || txt.length == 7) && e.which !== 8)
+								this.value = this.value + " ";
+						});
+						function onlyNumberKey(evt) {
+							// Only ASCII character in that range allowed
+							var ASCIICode = (evt.which) ? evt.which : evt.keyCode
+							if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+								return false;
+							return true;
+						}
+					</script>
+					<div class="form-wrapper">
+						<label for="email">Elektronska pošta *</label>
+						<input type="text" name="email" id="email" class="form-control"
+							pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-wrapper">
+						<label for="dp">Datum prihoda *</label>
+						<input type="date" id="dp" class="form-control" required>
+					</div>
+					<div class="form-wrapper">
+						<label for="do">Datum odhoda*</label>
+						<input type="date" id="do" class="form-control" required>
+					</div>
+				</div>
+				<div class="form-row last">
+					<div class="form-wrapper">
+						<label for="odrasli">Odrasli *</label>
+						<select name="odrasli" id="odrasli" class="form-control" required>
+							<option disabled selected value> -- izberite -- </option>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+						</select>
+					</div>
+					<div class="form-wrapper">
+						<label for="otroci">Otroci *</label>
+						<select name="otroci" id="otroci" class="form-control" required>
+							<option disabled selected value> -- izberite -- </option>
+							<option value="0">0</option>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+						</select>
+					</div>
+				</div>
+				<input type="button" value="POTRDITEV" id="potrdi" name="potrdi" onclick="AcceptReservation()">
+				<script>
+					function AcceptReservation() {
+						var datpri = Date.parse(document.getElementById("dp").value);
+						var datod = Date.parse(document.getElementById("do").value);
+
+						function checkPatternTelSt() {
+							var elem = document.getElementById("telst");
+							// Samo stevilke, 3krat po 3 stevilke
+							var re = /^[\d]{3} [\d]{3} [\d]{3}/;
+							return re.test(elem.value);
+						}
+						function checkPatternEmail() {
+							var elem = document.getElementById("email");
+							// Samo stevilke, 3krat po 3 stevilke
+							var re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
+							return re.test(elem.value);
+						}
+
+						if (document.getElementById("ime").value == "" || document.getElementById("priimek").value == "" || document.getElementById("telst").value == "" || document.getElementById("email").value == "" || document.getElementById("dp").value == "" || document.getElementById("do").value == "" || document.getElementById("odrasli").value == "" || document.getElementById("otroci").value == "") {
+							Swal.fire({
+								title: 'Rezervacija ni uspela!',
+								showClass: {
+									popup: 'animate__animated animate__fadeInDown'
+								},
+								hideClass: {
+									popup: 'animate__animated animate__fadeOutUp'
+								},
+								text: 'Niste izpolnili vseh zahtevanih polj.',
+								icon: 'error',
+								iconColor: "#c2bcb0",
+								confirmButtonText: 'Zapri',
+								confirmButtonColor: "#000000",
+
+							})
+						}
+						else if (datod < datpri) {
+							Swal.fire({
+								text: 'Vneseni datumi se ne ujemajo!',
+								showClass: {
+									popup: 'animate__animated animate__fadeInDown'
+								},
+								hideClass: {
+									popup: 'animate__animated animate__fadeOutUp'
+								},
+								icon: 'error',
+								iconColor: "#c2bcb0",
+								confirmButtonText: 'Zapri',
+								confirmButtonColor: "#000000",
+
+							})
+						}
+						else if(checkPatternTelSt()==false){
+							Swal.fire({
+								text: 'Oblika zapisa telefonske številke ni pravilna!',
+								showClass: {
+									popup: 'animate__animated animate__fadeInDown'
+								},
+								hideClass: {
+									popup: 'animate__animated animate__fadeOutUp'
+								},
+								icon: 'error',
+								iconColor: "#c2bcb0",
+								confirmButtonText: 'Zapri',
+								confirmButtonColor: "#000000",
+
+							})
+						}
+						else if(checkPatternEmail()==false){
+							Swal.fire({
+								text: 'Oblika zapisa elektronske pošte ni pravilna!',
+								showClass: {
+									popup: 'animate__animated animate__fadeInDown'
+								},
+								hideClass: {
+									popup: 'animate__animated animate__fadeOutUp'
+								},
+								icon: 'error',
+								iconColor: "#c2bcb0",
+								confirmButtonText: 'Zapri',
+								confirmButtonColor: "#000000",
+
+							})
+						}
+						else {
+							Swal.fire({
+								title: 'Rezervacija uspešna!',
+								showClass: {
+									popup: 'animate__animated animate__fadeInDown'
+								},
+								hideClass: {
+									popup: 'animate__animated animate__fadeOutUp'
+								},
+								text: 'Veselimo se vašega obiska.',
+								icon: 'success',
+								iconColor: "#c2bcb0",
+								confirmButtonText: 'Zapri',
+								confirmButtonColor: "#000000",
+
+							})
+							document.getElementById("ime").value = "";
+							document.getElementById("priimek").value = "";
+							document.getElementById("telst").value = "";
+							document.getElementById("email").value = "";
+							document.getElementById("dp").value = "";
+							document.getElementById("do").value = "";
+							document.getElementById("odrasli").value = "";
+							document.getElementById("otroci").value = "";
+						}
+					}
+				</script>
+			</form>
+		</div>
+	</div>
+</body>
+
+</html>
